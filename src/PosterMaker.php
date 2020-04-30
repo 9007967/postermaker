@@ -46,16 +46,17 @@ class PosterMaker
 
     /**
      * 添加文字
-     * @param      $text      string 文字
-     * @param      $size      int 文字大小
-     * @param      $xy        array 坐标[x坐标，y坐标]
-     * @param      $color     array [R,G,B] color value
-     * @param      $font_file string 字体路径
-     * @param      $angle     int 文字旋转角度
-     * @param      $txt_max_width int 文字区块最大宽度 超过换行
+     * @param        $text          string 文字
+     * @param        $size          int 文字大小
+     * @param        $xy            array 坐标[x坐标，y坐标]
+     * @param        $color         string color value
+     * @param        $font_file     string 字体路径
+     * @param        $angle         int 文字旋转角度
+     * @param        $txt_max_width int 文字区块最大宽度 超过换行
+     * @param        $shadow        bool
      * @return
      */
-    public function addText($text, $size = 14, $xy = [ 0, 0 ], $color = [ 0, 0, 0 ], $font_file = '', $angle = 0, $txt_max_width = null)
+    public function addText($text, $size = 14, $xy = [ 0, 0 ], string $color = '#000000', $font_file = '', $angle = 0, $txt_max_width = null, $shadow = false)
     {
         if ($font_file == '')
             $font_file = __DIR__ . DIRECTORY_SEPARATOR . 'msyh.ttc';
@@ -76,7 +77,21 @@ class PosterMaker
             $text = $str;
         }
 
+        if (is_string($color) && 0 === strpos($color, '#')) {
+            $color = str_split(substr($color, 1), 2);
+            $color = array_map('hexdec', $color);
+            if (empty($color[3]) || $color[3] > 127) {
+                $color[3] = 0;
+            }
+        } elseif (!is_array($color)) {
+            throw new ImageException('错误的颜色值');
+        }
+
         $font_color = ImageColorAllocate($this->bg, $color[0], $color[1], $color[2]);
+        if($shadow){
+            $shadowCol = imagecolorallocatealpha($this->bg, 0, 0, 0, 80);
+            imagettftext($this->bg, $size, $angle, $xy[0] + 1, $xy[1] + 1, $shadowCol, $font_file, $text);
+        }
         imagettftext($this->bg, $size, $angle, $xy[0], $xy[1], $font_color, $font_file, $text);
         return $this;
     }
