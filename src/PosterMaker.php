@@ -8,7 +8,7 @@ class PosterMaker
     /**
      * 构造函数
      * @param $w        int 宽度(px)
-     * @param $w        int 高度(px)
+     * @param $h        int 高度(px)
      * @param $bg_color array RGB color value
      */
     public function __construct(int $w, int $h, $bg_color = [ 100, 150, 150 ])
@@ -19,7 +19,7 @@ class PosterMaker
     /**
      * 填充画布背景
      * @param $w        int 宽度(px)
-     * @param $w        int 高度(px)
+     * @param $h        int 高度(px)
      * @param $bg_color array [R,G,B] color value
      */
     protected function createBg($w, $h, $bg_color)
@@ -34,6 +34,7 @@ class PosterMaker
      * @param $img_path string 图片路径
      * @param $xy       array 坐标[x坐标，y坐标]
      * @param $size_wh  array 尺寸[width, height]
+     * @return
      */
     public function addImg($img_path, $xy = [ 0, 0 ], $size_wh = [ 100, 100 ])
     {
@@ -66,6 +67,7 @@ class PosterMaker
             for ($i = 0; $i < mb_strlen($text); $i++) {
                 $letter[] = mb_substr($text, $i, 1);
             }
+
             foreach ($letter as $l) {
                 $teststr = $str . " " . $l;
                 $testbox = imagettfbbox($size, $angle, $font_file, $teststr);
@@ -107,7 +109,7 @@ class PosterMaker
         require_once "QRcode.php";
         if (!is_readable('./tempqr'))
             mkdir('./tempqr', 0700);
-        $tmp_name = './tempqr/' . uniqid() . '.png';
+        $tmp_name = './tempqr/' . md5($text) . '.png';
         \QRcode::png($text, $tmp_name, 0, 4);
         return $this->addImg($tmp_name, $xy, $size_wh);
     }
