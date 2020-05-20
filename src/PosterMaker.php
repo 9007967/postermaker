@@ -11,7 +11,7 @@ class PosterMaker
      * @param $h        int 高度(px)
      * @param $bg_color array RGB color value
      */
-    public function __construct(int $w, int $h, $bg_color = [ 100, 150, 150 ])
+    public function __construct(int $w, int $h, $bg_color = [ 255, 255, 255 ])
     {
         $this->createBg($w, $h, $bg_color);
     }
@@ -31,17 +31,20 @@ class PosterMaker
 
     /**
      * 添加图片
-     * @param $img_path string 图片路径
-     * @param $xy       array 坐标[x坐标，y坐标]
-     * @param $size_wh  array 尺寸[width, height]
+     * @param      $img_path string 图片路径
+     * @param      $xy       array 坐标[x坐标，y坐标]
+     * @param      $size_wh  array 尺寸[width, height]
+     * @param bool $status
      * @return
      */
-    public function addImg($img_path, $xy = [ 0, 0 ], $size_wh = [ 100, 100 ])
+    public function addImg($img_path, $xy = [ 0, 0 ], $size_wh = [ 100, 100 ], bool $status = true)
     {
-        [ $l_w, $l_h ] = getimagesize($img_path);
-        $img = $this->createImageFromFile($img_path);
-        imagecopyresized($this->bg, $img, $xy[0], $xy[1], 0, 0, $size_wh[0], $size_wh[1], $l_w, $l_h);
-        imagedestroy($img);
+        if ($status) {
+            [ $l_w, $l_h ] = getimagesize($img_path);
+            $img = $this->createImageFromFile($img_path);
+            imagecopyresized($this->bg, $img, $xy[0], $xy[1], 0, 0, $size_wh[0], $size_wh[1], $l_w, $l_h);
+            imagedestroy($img);
+        }
         return $this;
     }
 
@@ -85,12 +88,12 @@ class PosterMaker
             if (empty($color[3]) || $color[3] > 127) {
                 $color[3] = 0;
             }
-        } elseif (!is_array($color)) {
+        } else if (!is_array($color)) {
             throw new ImageException('错误的颜色值');
         }
 
         $font_color = ImageColorAllocate($this->bg, $color[0], $color[1], $color[2]);
-        if($shadow){
+        if ($shadow) {
             $shadowCol = imagecolorallocatealpha($this->bg, 0, 0, 0, 80);
             imagettftext($this->bg, $size, $angle, $xy[0] + 1, $xy[1] + 1, $shadowCol, $font_file, $text);
         }
