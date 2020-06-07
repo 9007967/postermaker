@@ -5,6 +5,27 @@ class PosterMaker
 {
     public $bg; // 背景图
 
+    protected $extensions = [
+        IMAGETYPE_GIF       => "gif"
+        , IMAGETYPE_JPEG    => "jpg"
+        , IMAGETYPE_PNG     => "png"
+        , IMAGETYPE_SWF     => "swf"
+        , IMAGETYPE_PSD     => "psd"
+        , IMAGETYPE_BMP     => "bmp"
+        , IMAGETYPE_TIFF_II => "tiff"
+        , IMAGETYPE_TIFF_MM => "tiff"
+        , IMAGETYPE_JPC     => "jpc"
+        , IMAGETYPE_JP2     => "jp2"
+        , IMAGETYPE_JPX     => "jpx"
+        , IMAGETYPE_JB2     => "jb2"
+        , IMAGETYPE_SWC     => "swc"
+        , IMAGETYPE_IFF     => "iff"
+        , IMAGETYPE_WBMP    => "wbmp"
+        , IMAGETYPE_XBM     => "xbm"
+        , IMAGETYPE_ICO     => "ico"
+        , IMAGETYPE_WEBP    => "webp"
+    ];
+
     /**
      * 构造函数
      * @param $w        int 宽度(px)
@@ -142,15 +163,13 @@ class PosterMaker
         if (preg_match('/http(s)?:\/\//', $file)) {
             $fileSuffix = $this->getNetworkImgType($file);
         } else {
-            $fileSuffix = pathinfo($file, PATHINFO_EXTENSION);
+            $fileSuffix = $this->extensions[@exif_imagetype($file)];
         }
-        if (!$fileSuffix)
-            return false;
+
+        if (!$fileSuffix) return false;
         switch ($fileSuffix) {
-            case 'jpeg':
-                $theImage = @imagecreatefromjpeg($file);
-                break;
             case 'jpg':
+            case 'jpeg':
                 $theImage = @imagecreatefromjpeg($file);
                 break;
             case 'png':
